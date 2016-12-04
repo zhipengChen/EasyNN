@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
+from __future__ import absolute_import
 import gzip
-from .data_utils import get_file
+from ..utils.data_utils import get_file
 import cPickle
 import sys
 

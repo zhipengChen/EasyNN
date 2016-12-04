@@ -1,0 +1,4 @@
+layers/Layer.pyc
+activations/__init__.pyc
+object/objectives.pyc
+*.pyc

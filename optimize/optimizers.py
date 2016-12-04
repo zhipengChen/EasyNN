@@ -2,7 +2,9 @@ from __future__ import absolute_import
 import theano
 import theano.tensor as T
 
-
+from ..utils.theano_utils import shared_zeros, shared_scalar, floatX
+from ..utils.generic_utils import get_from_module
+from six.moves import zip
 
 
 def clip_norm(g, c, n):

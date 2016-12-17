@@ -6,7 +6,7 @@ some code of this project is copy from keras
 
 
 .
-=======
+
 some code of this project is copy from keras .
 #six step to build your model
 -----------------------------------------------------------------------------------------------------------------------------------------
@@ -22,5 +22,5 @@ finally , train the model<br/>
 mnist_sample_shareddata.py in direct example shows how to buld your model in six step<br/>
 mnist_sample_not_shareddata.py is another example about mnist,both file has the same model . <br/>
 But mnist_sample_shareddata.py is a litter bit fast . <br/>
-late will add classic neural network layer like LSTM ，GRU ，CNN and so on
+Already added classic neural network layer like LSTM ，GRU ，CNN and so on
 

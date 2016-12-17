@@ -1,7 +1,7 @@
 # EasyNN
 A simple nn framework based on theano .
 all this code just for learning deep learning .
-<<<<<<< HEAD
+
 some code of this project is copy from keras
 
 
@@ -23,4 +23,4 @@ mnist_sample_shareddata.py in direct example shows how to buld your model in six
 mnist_sample_not_shareddata.py is another example about mnist,both file has the same model . <br/>
 But mnist_sample_shareddata.py is a litter bit fast . <br/>
 late will add classic neural network layer like LSTM ，GRU ，CNN and so on
->>>>>>> e44c988759baa098448598cfc130c8ad4f7f703b
+

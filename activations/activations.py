@@ -3,7 +3,8 @@ import theano.tensor as T
 
 
 def softmax(x):
-    return T.nnet.softmax(x.reshape((-1, x.shape[-1]))).reshape(x.shape)
+    # return T.nnet.softmax(x.reshape((-1, x.shape[-1]))).reshape(x.shape)
+    return T.nnet.softmax(x)
 
 
 def time_distributed_softmax(x):

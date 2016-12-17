@@ -3,22 +3,26 @@ import theano.tensor as T
 from ..utils import initializations
 from ..utils import *
 from ..activations import activations
-from .. import constrains
+from .. import constraints
 class Layer(object):
     def __init__(self,**kwargs):
         print('init layer')
+        # if self.trainable == None:
         self.trainable=[]
-        self.constrains=[constrains.get('Constraint')]
+        self.constraints=[constraints.get('Constraint')]
     def get_weights(self):
         return
     def set_weights(self):
         return
-    def build(self):
+    def build(self,input_shape):
         print('build')
-    def call(self):
-        return
+        raise NotImplementedError
+    def get_constraints(self):
+        return self.constraints*len(self.trainable)
+    def call(self,x):
+        raise NotImplementedError
     def get_output_shape(self):
-        return
+        raise NotImplementedError
 class Dense(Layer):
     def __init__(self,output_shape,activation="",init='glorot_uniform',**kwargs):
         super(Dense, self).__init__(**kwargs)

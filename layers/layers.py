@@ -4,6 +4,7 @@ from ..utils import initializations
 from ..utils import *
 from ..activations import activations
 from .. import constraints
+from theano.sandbox.rng_mrg import MRG_RandomStreams as RandomStreams
 class Layer(object):
     def __init__(self,**kwargs):
         print('init layer')
@@ -26,7 +27,6 @@ class Layer(object):
 class Dense(Layer):
     def __init__(self,output_shape,activation="",init='glorot_uniform',**kwargs):
         super(Dense, self).__init__(**kwargs)
-        print('test')
         self.init=initializations.get(init)
         self.output_shape=output_shape
         self.activation=activations.get(activation)
@@ -36,11 +36,23 @@ class Dense(Layer):
         self.trainable=[self.W,self.b]
     def call(self,x):
         return self.activation(T.dot(x,self.W)+self.b)
-    def get_output_shape(self,input_shape):
-        return (input_shape[0],self.output_shape)
+    def get_output_shape(self):
+        return (None,self.output_shape)
 class Activation(Layer):
     def __init__(self,activation="sigmoid",**kwargs):
         self.activation=activations.get(activation)
         super(Activation,self).__init__(**kwargs)
     def call(self,x):
         return self.activation(x)
+class Dropout(Layer):
+    def __init__(self, p, **kwargs):
+        super(Dropout, self).__init__(**kwargs)
+        self.p = p
+        self.srng = RandomStreams(seed=np.random.randint(10e6))
+
+    def call(self,x):
+        X = x
+        if self.p > 0.:
+            retain_prob = 1. - self.p
+            X *= self.srng.binomial(X.shape, p=retain_prob, dtype=theano.config.floatX) / retain_prob
+        return X

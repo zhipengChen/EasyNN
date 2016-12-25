@@ -5,9 +5,10 @@ import theano
 import theano.tensor as T
 from theano.tensor.signal import downsample
 
-from .. import activations, initializations, regularizers, constraints
+from .. import activations, regularizers, constraints
 from ..utils.theano_utils import shared_zeros, on_gpu
-from ..layers.core import Layer
+from ..utils import  initializations
+from ..layers import Layer
 
 if on_gpu():
     from theano.sandbox.cuda import dnn
@@ -196,17 +197,16 @@ class Convolution2D(Layer):
         self.W_constraint = constraints.get(W_constraint)
         self.b_constraint = constraints.get(b_constraint)
         self.constraints = [self.W_constraint, self.b_constraint]
-
-        self.initial_weights = weights
         super(Convolution2D, self).__init__(**kwargs)
 
-    def build(self):
-        stack_size = self.input_shape[1]
+    def build(self,input_shape):
+        stack_size = input_shape[1]
+        self.input_shape=input_shape
         self.input = T.tensor4()
         self.W_shape = (self.nb_filter, stack_size, self.nb_row, self.nb_col)
         self.W = self.init(self.W_shape)
         self.b = shared_zeros((self.nb_filter,))
-        self.params = [self.W, self.b]
+        self.trainable= [self.W, self.b]
         self.regularizers = []
 
         if self.W_regularizer:
@@ -220,13 +220,7 @@ class Convolution2D(Layer):
         if self.activity_regularizer:
             self.activity_regularizer.set_layer(self)
             self.regularizers.append(self.activity_regularizer)
-
-        if self.initial_weights is not None:
-            self.set_weights(self.initial_weights)
-            del self.initial_weights
-
-    @property
-    def output_shape(self):
+    def get_output_shape(self):
         input_shape = self.input_shape
         rows = input_shape[2]
         cols = input_shape[3]
@@ -234,8 +228,8 @@ class Convolution2D(Layer):
         cols = conv_output_length(cols, self.nb_col, self.border_mode, self.subsample[1])
         return (input_shape[0], self.nb_filter, rows, cols)
 
-    def get_output(self, train=False):
-        X = self.get_input(train)
+    def call(self,x):
+        X = x
         border_mode = self.border_mode
         if on_gpu() and dnn.dnn_available():
             if border_mode == 'same':
@@ -267,22 +261,6 @@ class Convolution2D(Layer):
 
         return self.activation(conv_out + self.b.dimshuffle('x', 0, 'x', 'x'))
 
-    def get_config(self):
-        config = {"name": self.__class__.__name__,
-                  "nb_filter": self.nb_filter,
-                  "nb_row": self.nb_row,
-                  "nb_col": self.nb_col,
-                  "init": self.init.__name__,
-                  "activation": self.activation.__name__,
-                  "border_mode": self.border_mode,
-                  "subsample": self.subsample,
-                  "W_regularizer": self.W_regularizer.get_config() if self.W_regularizer else None,
-                  "b_regularizer": self.b_regularizer.get_config() if self.b_regularizer else None,
-                  "activity_regularizer": self.activity_regularizer.get_config() if self.activity_regularizer else None,
-                  "W_constraint": self.W_constraint.get_config() if self.W_constraint else None,
-                  "b_constraint": self.b_constraint.get_config() if self.b_constraint else None}
-        base_config = super(Convolution2D, self).get_config()
-        return dict(list(base_config.items()) + list(config.items()))
 
 
 class MaxPooling1D(Layer):
@@ -333,26 +311,21 @@ class MaxPooling2D(Layer):
             stride = self.pool_size
         self.stride = tuple(stride)
         self.ignore_border = ignore_border
+    def build(self,input_shape):
+        self.input_shape=input_shape
 
-    @property
-    def output_shape(self):
+    def get_output_shape(self):
         input_shape = self.input_shape
         rows = pool_output_length(input_shape[2], self.pool_size[0], self.ignore_border, self.stride[0])
         cols = pool_output_length(input_shape[3], self.pool_size[1], self.ignore_border, self.stride[1])
         return (input_shape[0], input_shape[1], rows, cols)
 
-    def get_output(self, train=False):
-        X = self.get_input(train)
+    def call(self,x):
+        X = x
         output = downsample.max_pool_2d(X, ds=self.pool_size, st=self.stride, ignore_border=self.ignore_border)
         return output
 
-    def get_config(self):
-        config = {"name": self.__class__.__name__,
-                  "pool_size": self.pool_size,
-                  "ignore_border": self.ignore_border,
-                  "stride": self.stride}
-        base_config = super(MaxPooling2D, self).get_config()
-        return dict(list(base_config.items()) + list(config.items()))
+
 
 
 class UpSample1D(Layer):

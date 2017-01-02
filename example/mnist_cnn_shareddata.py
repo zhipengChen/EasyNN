@@ -54,15 +54,7 @@ Y_test=theano.shared(np.asarray(Y_test,dtype=theano.config.floatX))
 inputX=T.TensorType(dtype='float32',broadcastable=(False,)*4)()
 inputy=T.matrix('inputy')
 index=T.lscalar('input_index')
-#step3,define layers
-#define first layer
 
-
-# model = Sequential()
-#
-# model.add(Convolution2D(nb_filters, nb_conv, nb_conv,
-#                         border_mode='full',
-#                         input_shape=(1, img_rows, img_cols)))
 cnn1=Convolution2D(nb_filter=nb_filters,nb_row=nb_conv,nb_col=nb_conv,activation='relu')
 cnn1.build([None,1,img_rows,img_cols])
 cnn1_out=cnn1.call(inputX)
@@ -125,22 +117,3 @@ for i in xrange(epoch):
     end=time.clock()
     print((end-start))
 
-# model.add(Activation('relu'))
-# model.add(Convolution2D(nb_filters, nb_conv, nb_conv))
-# model.add(Activation('relu'))
-# model.add(MaxPooling2D(pool_size=(nb_pool, nb_pool)))
-# model.add(Dropout(0.25))
-#
-# model.add(Flatten())
-# model.add(Dense(128))
-# model.add(Activation('relu'))
-# model.add(Dropout(0.5))
-# model.add(Dense(nb_classes))
-# model.add(Activation('softmax'))
-
-# model.compile(loss='categorical_crossentropy', optimizer='adadelta')
-#
-# model.fit(X_train, Y_train, batch_size=batch_size, nb_epoch=nb_epoch, show_accuracy=True, verbose=1, validation_data=(X_test, Y_test))
-# score = model.evaluate(X_test, Y_test, show_accuracy=True, verbose=0)
-# print('Test score:', score[0])
-# print('Test accuracy:', score[1])
